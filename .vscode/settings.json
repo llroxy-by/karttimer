@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/Users/llroxyoctober/Documents/Arduino/libraries/TFT_eSPI"
+    "cmake.sourceDirectory": "/Users/llroxyoctober/Documents/Arduino/libraries/TFT_eSPI",
+    "cmake.ignoreCMakeListsMissing": true
 }

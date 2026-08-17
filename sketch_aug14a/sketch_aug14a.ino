@@ -7,7 +7,10 @@ const int led2pin = 12;
 const int led3pin = 14;
 const int led4pin = 27;    
 const int led5pin = 26;    
-const int button = 25;    
+const int leftbottom = 25;
+const int rightbottom = 33;
+const int speaker = 32;    
+const int button = 35;
 bool flag=0;
 int state = 0;
 unsigned long starttime;
@@ -26,7 +29,7 @@ int milliseconds;
 TFT_eSPI tft = TFT_eSPI();
 
 bool bottonpress(){
-    bool lr;
+、
 		bool buttonState=digitalRead(button);
 		
 		if(flag == 1){
@@ -61,6 +64,12 @@ void allLow() {
   digitalWrite(led3pin, LOW);
   digitalWrite(led4pin, LOW);
   digitalWrite(led5pin, LOW);
+}
+
+void speak(){
+  digitalWrite(speaker,HIGH);
+  delay(100);
+  digitalWrite(speaker,LOW);
 }
 
 void setup() {
@@ -130,6 +139,8 @@ void loop() {
     {
        tft.fillScreen(TFT_GREEN);
        digitalWrite(led1pin,HIGH);
+
+
         delay(1000);
       digitalWrite(led2pin,HIGH);
         delay(1000);
