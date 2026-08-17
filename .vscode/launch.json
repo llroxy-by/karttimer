@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Arduino: 编译并上传",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "Arduino: 编译并上传"
+    }
+  ]
+}
