@@ -7,7 +7,10 @@ const int led2pin = 12;
 const int led3pin = 14;
 const int led4pin = 27;    
 const int led5pin = 26;    
-const int button = 25;    
+const int startbutton = 25;    
+const int speaker = 32;
+const int button2 = 33;
+
 bool flag=0;
 int state = 0;
 unsigned long starttime;
@@ -28,13 +31,13 @@ TFT_eSPI tft = TFT_eSPI();
 bool bottonpress(){
 
 
-		bool buttonState=digitalRead(button);
+		bool buttonState=digitalRead(startbutton);
 		
 		if(flag == 1){
       return 0;
 			
 		}
-		if(digitalRead(button)==LOW){
+		if(digitalRead(startbutton)==LOW){
       flag = 1;
 			return 1;
 			
@@ -71,7 +74,7 @@ void setup() {
   pinMode(led3pin, OUTPUT);
   pinMode(led4pin, OUTPUT);
   pinMode(led5pin, OUTPUT);
-  pinMode(button, INPUT_PULLUP);
+  pinMode(startbutton, INPUT_PULLUP);
   allLow();
 
 
@@ -91,7 +94,7 @@ void setup() {
 
 void loop() {
 
-  Serial.printf("botton = %d,flag = %d \n",digitalRead(button), flag );
+  Serial.printf("startbutton = %d,flag = %d \n",digitalRead(startbutton), flag );
 
   
   if (bottonpress() == true)
@@ -163,7 +166,7 @@ void loop() {
 
 
 
-  if (digitalRead(button) == HIGH)
+  if (digitalRead(startbutton) == HIGH)
     {
       flag = 0;
     };
