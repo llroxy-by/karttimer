@@ -26,8 +26,7 @@ int milliseconds;
 TFT_eSPI tft = TFT_eSPI();
 
 bool bottonpress(){
-
-
+    bool lr;
 		bool buttonState=digitalRead(button);
 		
 		if(flag == 1){
