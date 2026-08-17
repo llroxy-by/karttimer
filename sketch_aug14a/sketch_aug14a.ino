@@ -1,5 +1,5 @@
 #include <TFT_eSPI.h>
-#include <Fonts/Formula1_Display_Regular_48.h>
+#include <Fonts/Formula1_Display_Regular_44.h>
 
 
 const int led1pin = 13;
@@ -10,7 +10,7 @@ const int led5pin = 26;
 const int leftbottom = 25;
 const int rightbottom = 33;
 const int speaker = 32;    
-const int button = 35;
+const int button = 19;
 bool flag=0;
 int state = 0;
 unsigned long starttime;
@@ -18,18 +18,18 @@ unsigned long stoptime;
 unsigned long duration;
 unsigned long nowtime;
 unsigned long finaltime;
+unsigned long lastDraw = 0;   
 int minutes;
 int seconds;
 int milliseconds;
 
 
 
-
-
 TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite timeSprite = TFT_eSprite(&tft);   
 
 bool bottonpress(){
-、
+
 		bool buttonState=digitalRead(button);
 		
 		if(flag == 1){
@@ -46,6 +46,7 @@ bool bottonpress(){
 			
 		}
 	}
+
 
 
 
@@ -67,9 +68,7 @@ void allLow() {
 }
 
 void speak(){
-  digitalWrite(speaker,HIGH);
-  delay(100);
-  digitalWrite(speaker,LOW);
+  tone(speaker, 800, 500);  // 响 500ms（三参数版自带定时停止）
 }
 
 void setup() {
@@ -82,15 +81,40 @@ void setup() {
   pinMode(button, INPUT_PULLUP);
   allLow();
 
+tone(speaker, 262, 500);  // 1 Do
+  delay(600);
+
+  tone(speaker , 262, 500);  // 1 Do
+  delay(600);
+
+  tone(speaker, 392, 500);  // 5 Sol
+  delay(600);
+
+  tone(speaker, 392, 500);  // 5 Sol
+  delay(600);
+
+  tone(speaker, 440, 500);  // 6 La
+  delay(600);
+
+  tone(speaker, 440, 500);  // 6 La
+  delay(600);
+
+  tone(speaker, 392, 1000); // 5 Sol
+  delay(1100);
+
+
+
 
   tft.init();
   tft.setRotation(4);
-  tft.loadFont(Formula1_Display_Regular_48);
+  tft.loadFont(Formula1_Display_Regular_44);
+  tft.setTextDatum(MC_DATUM);   
   tft.fillScreen(TFT_YELLOW);
   tft.setTextColor(TFT_BLACK, TFT_YELLOW);
-  tft.setTextSize(2);
-  tft.setCursor(20, 100);
-  tft.println("1234567890");
+  tft.drawString("READY", 120, 120);   
+
+  timeSprite.createSprite(240, 55);    
+  timeSprite.loadFont(Formula1_Display_Regular_44);   
 
   Serial.begin(115200);
 
@@ -113,25 +137,28 @@ void loop() {
       {
         stoptime = millis();
         finaltime = stoptime - starttime;
-        tft.fillRect(0, 90, 180, 50, TFT_BLUE);
-        tft.setCursor(20, 100);
-        tft.setTextSize(2);
+        tft.fillScreen(TFT_BLUE);
         tft.setTextColor(TFT_BLACK, TFT_BLUE);
         minutes = finaltime / 60000;
         seconds = (finaltime % 60000) / 1000;
         milliseconds = finaltime % 1000;
-        tft.printf("Finaltime \n %02d:%02d.%03d\n", minutes, seconds, milliseconds);
+        char buf[32];
+        sprintf(buf, "%d:%02d.%03d", minutes, seconds, milliseconds);
+        tft.drawString("FINAL", 120, 95);      // 第一行：标题（一行放不下就分两行）
+        tft.drawString(buf, 120, 135);         // 第二行：时间
+        tone(speaker, 440, 500);  // 6 La
+        delay(600);
 
         state = 3;
       }
       else if (state == 3)
       {
-        tft.fillRect(30, 90, 180, 50, TFT_RED);
-        tft.setCursor(50, 100);
-        tft.setTextSize(2);
-        tft.setTextColor(TFT_BLACK, TFT_BLUE);
-        tft.println("Yes");
+        tft.fillScreen(TFT_RED);
+        tft.setTextColor(TFT_BLACK, TFT_RED);
+        tft.drawString("READY", 120, 120);
         state = 0;
+        tone(speaker, 392, 500);  // 5 Sol
+        delay(600);
       }
     };
 
@@ -139,18 +166,24 @@ void loop() {
     {
        tft.fillScreen(TFT_GREEN);
        digitalWrite(led1pin,HIGH);
-
-
+        speak();
         delay(1000);
       digitalWrite(led2pin,HIGH);
+        speak();
         delay(1000);
       digitalWrite(led3pin,HIGH);
+        speak();
         delay(1000);
        digitalWrite(led4pin,HIGH);
+        speak();
         delay(1000);
       digitalWrite(led5pin,HIGH);
+        speak();
         delay(1000);
       allLow();
+        speak();
+        delay(1000);
+        speak();
       starttime = millis();
       state = 2;
       
@@ -159,16 +192,21 @@ void loop() {
     if (state == 2)
       {
         nowtime = millis();
-        duration = nowtime - starttime;
-        tft.fillRect(0, 90, 180, 50, TFT_RED);
-        tft.setCursor(20, 100);
-        tft.setTextSize(2);
-        tft.setTextColor(TFT_BLACK, TFT_RED);
-        minutes = duration / 60000;
-        seconds = (duration % 60000) / 1000;
-        milliseconds = duration % 1000;
-        tft.printf("Duration \n %02d:%02d.%03d\n", minutes, seconds, milliseconds);
-        delay(50);
+        duration = nowtime - starttime;   
+
+        if (millis() - lastDraw >= 30) {
+          lastDraw = millis();
+          minutes = duration / 60000;
+          seconds = (duration % 60000) / 1000;
+          milliseconds = duration % 1000;
+          char buf[32];
+          sprintf(buf, "%d:%02d.%03d", minutes, seconds, milliseconds);
+          timeSprite.fillSprite(TFT_RED);             
+          timeSprite.setTextColor(TFT_BLACK, TFT_RED);
+          timeSprite.setTextDatum(MC_DATUM);
+          timeSprite.drawString(buf, 120, 27);         
+          timeSprite.pushSprite(0, 95);             
+        }
       }
 
 
